@@ -9,7 +9,7 @@ RUN npm install
 
 RUN npm run build
 
-FROM node 22.90.0 as FINAL
+FROM node:22.90.0 as FINAL
 WORKDIR /app/
 COPY --from=build /usr/app/node_modules/ ./node_modules/
 COPY --from=BUILD /usr/app/dist ./dist/

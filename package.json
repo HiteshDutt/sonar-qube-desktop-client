@@ -1,0 +1,33 @@
+{
+  "name": "sonar_issues_auto_decision_maker",
+  "version": "1.0.0",
+  "description": "POC to find rule wise issues on Sonar and identify false positive",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest",
+    "dev:read": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.read.ts\"",
+    "dev:update": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.write.ts\"",
+    "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  },
+  "author": "Hitesh Dutt",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0",
+    "typescript": "^5.6.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tscpaths": "^0.0.9"
+  }
+}

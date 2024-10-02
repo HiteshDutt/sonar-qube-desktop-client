@@ -20,9 +20,9 @@ spec:
         app: Sonar-qube-excel-extractor
     spec:
       containers:
-      - image: substitute_image_name
+      - image: hiteshdutt/sonar-server-excel-extractor:latest
         command: ["/bin/sh",  "-c",  "envsubst < /usr/cmconfig/appsettings.js > /app/dist/config/appsettings.js && node /app/dist/index.read.js"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: Sonar-qube-excel-extractor
         env:
         - name: LOGGING_FILE_PATH

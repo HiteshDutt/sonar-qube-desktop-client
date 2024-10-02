@@ -27,7 +27,7 @@ export class CompareSonarIssuesExcel {
             {info: `In any event where any modification done on source code, due to which the line number of impacted (sonar issue) code has changed, it would appear that issue is resolved from ${appsettings.compareBranch[0]} & has been introduced in ${appsettings.compareBranch[1]}`, color: this.pinkColour},
             {info: `Indicates that issue is resolved since ${appsettings.compareBranch[0]}`, color: this.greenColour},
             {info: `Indicates that issue is introduced since ${appsettings.compareBranch[0]}`, color: this.redColour},
-            {info: `Indicates that issue exists since ${appsettings.compareBranch[0]}`, color: this.pinkColour}
+            {info: `Indicates that issue exists since ${appsettings.compareBranch[0]}`, color: this.blueColour}
         ];
 
         ExcelUtility.generateSheetWithRowWiseColors(informationData, 'Information', finalWorkbookPath);

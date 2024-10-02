@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { container } from "tsyringe";
+import container from "./di/container.di";
 import { UpdateSonarIssuesExcel } from "./business/update-sonar-issues-excel";
 
 async function main() {

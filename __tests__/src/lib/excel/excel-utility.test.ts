@@ -1,5 +1,6 @@
 import { ExcelUtility } from '../../../../src/lib/excel/excel-utility';
 import * as XLSX from 'xlsx';
+import * as XLSXStyle from 'xlsx-style';
 import fs from 'fs';
 
 jest.mock('fs');
@@ -30,7 +31,7 @@ describe('ExcelUtility', () => {
             expect(XLSX.utils.book_new).toHaveBeenCalled();
             expect(XLSX.utils.json_to_sheet).toHaveBeenCalledWith(mockData);
             expect(XLSX.utils.book_append_sheet).toHaveBeenCalledWith(mockWorkbook, mockWorksheet, mockSheetName);
-            expect(XLSX.writeFile).toHaveBeenCalledWith(mockWorkbook, mockFilePath);
+            expect(XLSXStyle.writeFile).toHaveBeenCalledWith(mockWorkbook, mockFilePath);
         });
 
         it('should append data to an existing workbook and create a new sheet if sheet name exists', () => {
@@ -42,10 +43,10 @@ describe('ExcelUtility', () => {
 
             ExcelUtility.generate(mockData, mockSheetName, mockFilePath);
 
-            expect(XLSX.readFile).toHaveBeenCalledWith(mockFilePath);
+            expect(XLSXStyle.readFile).toHaveBeenCalledWith(mockFilePath);
             expect(XLSX.utils.json_to_sheet).toHaveBeenCalledWith(mockData);
             expect(XLSX.utils.book_append_sheet).toHaveBeenCalledWith(mockWorkbook, mockWorksheet, `${mockSheetName}_1`);
-            expect(XLSX.writeFile).toHaveBeenCalledWith(mockWorkbook, mockFilePath);
+            expect(XLSXStyle.writeFile).toHaveBeenCalledWith(mockWorkbook, mockFilePath);
         });
     });
 
@@ -53,12 +54,12 @@ describe('ExcelUtility', () => {
         it('should read data from an existing sheet', () => {
             const mockWorkbook = { Sheets: { [mockSheetName]: {} } };
             const mockData = [{ name: 'John', age: 30 }];
-            (XLSX.readFile as jest.Mock).mockReturnValue(mockWorkbook);
+            (XLSXStyle.readFile as jest.Mock).mockReturnValue(mockWorkbook);
             (XLSX.utils.sheet_to_json as jest.Mock).mockReturnValue(mockData);
 
             const result = ExcelUtility.read(mockFilePath, mockSheetName);
 
-            expect(XLSX.readFile).toHaveBeenCalledWith(mockFilePath);
+            expect(XLSXStyle.readFile).toHaveBeenCalledWith(mockFilePath);
             expect(XLSX.utils.sheet_to_json).toHaveBeenCalledWith(mockWorkbook.Sheets[mockSheetName]);
             expect(result).toEqual(mockData);
         });

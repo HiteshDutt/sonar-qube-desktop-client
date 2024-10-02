@@ -1,13 +1,14 @@
-import { injectable } from 'tsyringe';
 import { ExcelUtility } from '../lib/excel/excel-utility';
 import { appsettings } from '../config/appsettings';
 import { SonarReadInfo } from '../lib/sonar/read-info';
 import { Utility } from '../lib/utility/utility';
 import fs from 'fs';
+import { autoInjectable } from 'tsyringe';
 
-@injectable()
+@autoInjectable()
 export class ExportSonarIssuesExcel {
-    constructor(private sonarReadInfo: SonarReadInfo
+    constructor(
+        private readonly sonarReadInfo: SonarReadInfo
     ) {
     }
 
@@ -36,7 +37,7 @@ export class ExportSonarIssuesExcel {
         console.timeEnd('ExportSonarIssuesExcel');
     }
 
-    private getRulesByQualityProfile = async (profiles: string[]) => {
+    private readonly getRulesByQualityProfile = async (profiles: string[]) => {
         const rules = [];
         for (let i = 0; i < profiles.length; i++) {
 
@@ -49,50 +50,51 @@ export class ExportSonarIssuesExcel {
                     const sheetName = (rule.key as string).split(':')[1];
                     return { key: rule.key, sheetIdentifier: sheetName, name: rule.name, severity: rule.severity, action: 'noaction' }
                 });
-                const uniqueRulesArray = removeDuplicates(rulesArray, 'key');
+                const uniqueRulesArray = this.removeDuplicates(rulesArray, 'key');
                 rules.push(...uniqueRulesArray);
                 hasNextPageForProfileRules = hasNextPage;
             }
         }
 
         return rules;
+
     }
 
-    private getRulesByQualityProfilePageNumber = async (profile: string, pageNumber: number) => {
-        const rulesReponse = await this.sonarReadInfo.getRulesByQualityProfile(profile, pageNumber, appsettings.pageSize);
-        const total = rulesReponse.total;
-        const hasNextPage = total > pageNumber * appsettings.pageSize;
-        return { rules: rulesReponse, hasNextPage };
-    }
-
-    private getAllIssuesByRule = async (rule: string) => {
-        let hasNextPageForRuleIssues = true;
-        let count = 0;
-        const issues = [];
-        while (hasNextPageForRuleIssues) {
-            count++;
-            const issuesReponse = await this.sonarReadInfo.getIssuesByRuleProfile(rule, count, appsettings.pageSize);
-            if (issuesReponse.issues.length === 0) {
-                hasNextPageForRuleIssues = false;
-            }
-            else {
-                issues.push(...issuesReponse.issues);
-                hasNextPageForRuleIssues = issuesReponse.total > appsettings.pageSize * count;
-            }
-        }
-        return issues;
-    }
-
-    private getIntoSheetDetails = () => {
-        const information = [];
-        information.push({ info: `This is a utility generated report for the branch  ${appsettings.branch}` });
-        information.push({ info: `To mark issues as "Accept"/"False Positive"/"Re Open" please use values "accept"/"falsepositive"/"reopen" respectively on rules sheet of same workbook.\nFor any other acceptable action [please refer acitions on sonarqube page web api documentation, look for 'api/issues/bulk_change' api and parameter - dotransition]` });
-        information.push({ info: `Once values are marked, please run applcation and select option 2 to update the issues in sonarqube` });
-
-        return information;
-    }
+    private readonly getRulesByQualityProfilePageNumber = async (profile: string, pageNumber: number) => {
+    const rulesReponse = await this.sonarReadInfo.getRulesByQualityProfile(profile, pageNumber, appsettings.pageSize);
+    const total = rulesReponse.total;
+    const hasNextPage = total > pageNumber * appsettings.pageSize;
+    return { rules: rulesReponse, hasNextPage };
 }
-function removeDuplicates(array: any[], key: string) {
+
+    private readonly getAllIssuesByRule = async (rule: string) => {
+    let hasNextPageForRuleIssues = true;
+    let count = 0;
+    const issues = [];
+    while (hasNextPageForRuleIssues) {
+        count++;
+        const issuesReponse = await this.sonarReadInfo.getIssuesByRuleProfile(rule, count, appsettings.pageSize);
+        if (issuesReponse.issues.length === 0) {
+            hasNextPageForRuleIssues = false;
+        }
+        else {
+            issues.push(...issuesReponse.issues);
+            hasNextPageForRuleIssues = issuesReponse.total > appsettings.pageSize * count;
+        }
+    }
+    return issues;
+}
+
+    private readonly getIntoSheetDetails = () => {
+    const information = [];
+    information.push({ info: `This is a utility generated report for the branch  ${appsettings.branch}` });
+    information.push({ info: `To mark issues as "Accept"/"False Positive"/"Re Open" please use values "accept"/"falsepositive"/"reopen" respectively on rules sheet of same workbook.\nFor any other acceptable action [please refer acitions on sonarqube page web api documentation, look for 'api/issues/bulk_change' api and parameter - dotransition]` });
+    information.push({ info: `Once values are marked, please run applcation and select option 2 to update the issues in sonarqube` });
+
+    return information;
+}
+
+    private removeDuplicates(array: any[], key: string) {
     const seen = new Set();
     return array.filter(item => {
         const keyValue = item[key];
@@ -103,4 +105,5 @@ function removeDuplicates(array: any[], key: string) {
             return true;
         }
     });
+}
 }

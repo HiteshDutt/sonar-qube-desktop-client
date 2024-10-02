@@ -20,7 +20,7 @@ export class Utility {
         return branchName;
     }
 
-    public static setSonarHeader = (token: string) => {
+    public static readonly setSonarHeader = (token: string) => {
         return {'Authorization' : `Bearer ${token}`};
     }
 }

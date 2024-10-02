@@ -6,15 +6,27 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
 		"declaration": false,
 		"skipLibCheck": true,
-		"lib": ["ESNext"],
+		"lib": [
+			"ESNext"
+		],
 		"outDir": "dist/",
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["src/*"]
+			"@/*": [
+				"src/*"
+			]
 		},
-		"sourceMap": true
+		"sourceMap": true,
+		"typeRoots": [
+			"./node_modules/@types",
+			"./types"
+		]
 	},
-	"include": ["src/**/*.ts", "__tests__/export-sonar-issues-excel.test.ts", "__tests__/src/lib/sonar/read-info.test.ts", "__tests__/src/lib/sonar/write-update-info.test.ts", "__tests__/src/lib/excel/excel-utility.test.ts", "__tests__/src/business/export-sonar-issues-excel.test.ts"]
+	"include": [
+		"src/**/*.ts"
+	]
 }

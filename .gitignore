@@ -131,3 +131,4 @@ dist
 
 # User Entered Git Ignore Items
 test.json
+output/*

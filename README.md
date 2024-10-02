@@ -27,6 +27,7 @@ cd sonar-qube-desktop-client
   - `sonarToken` -> user token from [sonar](https://docs.sonarsource.com/sonarqube/9.8/user-guide/user-account/generating-and-using-tokens/#:~:text=You%20can%20generate%20new%20tokens,or%20choose%20%22no%20expiration%22.) server.
   - `sonarProjectKey` -> sonar project key from sonar server
   - `branch` -> branch for which you need to extract sonar results and issues, this branch should have been analyzed and results should be available on sonar server before running the tool.
+  - `compareBranch` -> array of branches that needs to be compared, when compare is executed, analysis for both branches should be downloaded
   - `pageSize` -> maximum number of records required to be fetched in single request (maximum of 500)
   - `maxRecordsToBeUpdaate` -> maximum records to be updated while running update utility
   - `outputDirectory` -> directory where result should be published for export or used to import while performing update
@@ -45,6 +46,16 @@ npm run dev:read
 5. run update utility
 ```ps
 npm run dev:update
+```
+
+#### or
+
+5. run compare utility
+This needs
+1. analysis done on two different version
+2. excel output for two analysis to be available in output folder
+```ps
+npm run dev:compare
 ```
 
 6. run unit test

@@ -1,12 +1,12 @@
-import { injectable } from "tsyringe";
 import { Api } from "../api/api";
 import { appsettings } from "../../config/appsettings";
 import { ISonarBulkIssuesResponse } from "./models/bulk-issues.response.interface";
 import { Utility } from "../utility/utility";
+import { autoInjectable } from "tsyringe";
 
-@injectable()
+@autoInjectable()
 export class SonarWriteUpdateInfo{
-    constructor(private api: Api) {
+    constructor(private readonly api: Api) {
     }
 
     updateBulkIssuesToSonar = async (keysCsv: string, transition: string) => {

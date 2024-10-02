@@ -20,7 +20,7 @@ spec:
         app: Sonar-qube-excel-extractor
     spec:
       containers:
-      - image: hiteshdutt/sonar-server-excel-extractor:latest
+      - image: substitute_image_name
         command: ["/bin/sh",  "-c",  "envsubst < /usr/cmconfig/index.js > /app/dist/config/index.js && node /app/dist/index.js"]
         imagePullPolicy: IfNotPresent
         name: Sonar-qube-excel-extractor

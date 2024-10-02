@@ -1,7 +1,7 @@
 import axios from "axios";
-import { injectable } from "tsyringe";
+import { autoInjectable } from "tsyringe";
 
-@injectable()
+@autoInjectable()
 export class Api {
     constructor() {
     }

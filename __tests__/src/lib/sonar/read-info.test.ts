@@ -175,7 +175,7 @@ describe("SonarReadInfo", () => {
 
         expect(apiMock.get).toHaveBeenCalledWith(
             `${appsettings.sonarBaseUrl}/api/issues/search`,
-            { 'componentKeys': appsettings.sonarProjectKey, 'branch': appsettings.branch, 'rules': ruleKey, 'resolved': false, p: pageNumber, ps: pageSize },
+            { 'componentKeys': appsettings.sonarProjectKey, 'branch': appsettings.branch, 'rules': ruleKey, 'issueStatuses': 'OPEN,ACCEPTED', p: pageNumber, ps: pageSize },
             { 'Authorization': `Bearer ${appsettings.sonarToken}` }
         );
         expect(result).toBe(mockResponse);

@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - image: substitute_image_name
-        command: ["/bin/sh",  "-c",  "envsubst < /usr/cmconfig/index.js > /app/dist/config/index.js && node /app/dist/index.js"]
+        command: ["/bin/sh",  "-c",  "envsubst < /usr/cmconfig/appsettings.js > /app/dist/config/appsettings.js && node /app/dist/index.read.js"]
         imagePullPolicy: IfNotPresent
         name: Sonar-qube-excel-extractor
         env:

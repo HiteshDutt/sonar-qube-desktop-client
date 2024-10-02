@@ -1,16 +1,14 @@
 #dockerfile for building node image
-FROM node:22.9.0 as BUILD
+FROM node:22.9.0 AS BUILD
 # Create app directory
 WORKDIR /usr/app
 # Install app dependencies
 COPY . .
 
-RUN npm install
+RUN npm install && npm run build
 
-RUN npm run build
-
-FROM node 22.9.0 as FINAL
+FROM node:22.9.0 AS FINAL
 WORKDIR /app/
 COPY --from=build /usr/app/node_modules/ ./node_modules/
 COPY --from=BUILD /usr/app/dist ./dist/
-CMD ["node", "/app/dist/index.js"]
+CMD ["node", "/app/dist/index.read.js"]

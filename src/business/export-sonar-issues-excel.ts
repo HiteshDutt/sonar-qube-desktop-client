@@ -25,6 +25,7 @@ export class ExportSonarIssuesExcel {
         let profilesByLang = await this.sonarReadInfo.getProfilesByLangugae('cs');
         const profiles = profilesByLang.profiles;
         let rules = await this.getRulesByQualityProfile([...profiles].map((profile: any) => profile.key));
+        this.setCountFromSheetFormulaForData(rules);
         ExcelUtility.generate(rules, 'Rules', workbookPath);
         for (let i = 0; i < rules.length; i++) {
             console.log(`Getting Issue for rule ${rules[i].sheetIdentifier} - Rule Count ${i + 1} / ${rules.length}`);
@@ -61,49 +62,56 @@ export class ExportSonarIssuesExcel {
     }
 
     private readonly getRulesByQualityProfilePageNumber = async (profile: string, pageNumber: number) => {
-    const rulesReponse = await this.sonarReadInfo.getRulesByQualityProfile(profile, pageNumber, appsettings.pageSize);
-    const total = rulesReponse.total;
-    const hasNextPage = total > pageNumber * appsettings.pageSize;
-    return { rules: rulesReponse, hasNextPage };
-}
+        const rulesReponse = await this.sonarReadInfo.getRulesByQualityProfile(profile, pageNumber, appsettings.pageSize);
+        const total = rulesReponse.total;
+        const hasNextPage = total > pageNumber * appsettings.pageSize;
+        return { rules: rulesReponse, hasNextPage };
+    }
 
     private readonly getAllIssuesByRule = async (rule: string) => {
-    let hasNextPageForRuleIssues = true;
-    let count = 0;
-    const issues = [];
-    while (hasNextPageForRuleIssues) {
-        count++;
-        const issuesReponse = await this.sonarReadInfo.getIssuesByRuleProfile(rule, count, appsettings.pageSize);
-        if (issuesReponse.issues.length === 0) {
-            hasNextPageForRuleIssues = false;
+        let hasNextPageForRuleIssues = true;
+        let count = 0;
+        const issues = [];
+        while (hasNextPageForRuleIssues) {
+            count++;
+            const issuesReponse = await this.sonarReadInfo.getIssuesByRuleProfile(rule, count, appsettings.pageSize);
+            if (issuesReponse.issues.length === 0) {
+                hasNextPageForRuleIssues = false;
+            }
+            else {
+                issues.push(...issuesReponse.issues);
+                hasNextPageForRuleIssues = issuesReponse.total > appsettings.pageSize * count;
+            }
         }
-        else {
-            issues.push(...issuesReponse.issues);
-            hasNextPageForRuleIssues = issuesReponse.total > appsettings.pageSize * count;
-        }
+        return issues;
     }
-    return issues;
-}
 
     private readonly getIntoSheetDetails = () => {
-    const information = [];
-    information.push({ info: `This is a utility generated report for the branch  ${appsettings.branch}` });
-    information.push({ info: `To mark issues as "Accept"/"False Positive"/"Re Open" please use values "accept"/"falsepositive"/"reopen" respectively on rules sheet of same workbook.\nFor any other acceptable action [please refer acitions on sonarqube page web api documentation, look for 'api/issues/bulk_change' api and parameter - dotransition]` });
-    information.push({ info: `Once values are marked, please run applcation and select option 2 to update the issues in sonarqube` });
+        const information = [];
+        information.push({ info: `This is a utility generated report for the branch  ${appsettings.branch}` });
+        information.push({ info: `To mark issues as "Accept"/"False Positive"/"Re Open" please use values "accept"/"falsepositive"/"reopen" respectively on rules sheet of same workbook.\nFor any other acceptable action [please refer acitions on sonarqube page web api documentation, look for 'api/issues/bulk_change' api and parameter - dotransition]` });
+        information.push({ info: `Once values are marked, please run applcation and select option 2 to update the issues in sonarqube` });
 
-    return information;
-}
+        return information;
+    }
 
     private removeDuplicates(array: any[], key: string) {
-    const seen = new Set();
-    return array.filter(item => {
-        const keyValue = item[key];
-        if (seen.has(keyValue)) {
-            return false;
-        } else {
-            seen.add(keyValue);
-            return true;
+        const seen = new Set();
+        return array.filter(item => {
+            const keyValue = item[key];
+            if (seen.has(keyValue)) {
+                return false;
+            } else {
+                seen.add(keyValue);
+                return true;
+            }
+        });
+    }
+
+    private setCountFromSheetFormulaForData(data: any[]) {
+        for (let i = 0; i < data.length; i++) {
+            const formula = `=COUNTA(INDIRECT(B${i+2}&"!A:A")) - 1`;
+            data[i].count = formula
         }
-    });
-}
+    }
 }

@@ -8,7 +8,6 @@ COPY . .
 RUN npm install && npm run build
 
 FROM node:20.13.0-alpine3.19 AS FINAL
-RUN apt
 WORKDIR /app/
 COPY --from=build /usr/app/node_modules/ ./node_modules/
 COPY --from=BUILD /usr/app/dist ./dist/

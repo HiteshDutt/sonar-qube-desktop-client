@@ -2,13 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: Sonar-qube-excel-extractor
-  name: Sonar-qube-excel-extractor
+    app: sonar-qube-excel-extractor
+  name: sonar-qube-excel-extractor
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: Sonar-qube-excel-extractor
+      app: sonar-qube-excel-extractor
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -17,13 +17,13 @@ spec:
   template:
     metadata:
       labels:
-        app: Sonar-qube-excel-extractor
+        app: sonar-qube-excel-extractor
     spec:
       containers:
       - image: hiteshdutt/sonar-server-excel-extractor:latest
         command: ["/bin/sh",  "-c",  "envsubst < /usr/cmconfig/appsettings.js > /app/dist/config/appsettings.js && node /app/dist/index.read.js"]
         imagePullPolicy: Always
-        name: Sonar-qube-excel-extractor
+        name: sonar-qube-excel-extractor
         env:
         - name: LOGGING_FILE_PATH
           value: "/app/logs/"
@@ -36,8 +36,8 @@ spec:
             memory: 100Mi
         volumeMounts:
         - mountPath: /usr/cmconfig
-          name: Sonar-qube-excel-extractor-cm-volume
+          name: sonar-qube-excel-extractor-cm-volume
       volumes:
-      - name: Sonar-qube-excel-extractor-cm-volume
+      - name: sonar-qube-excel-extractor-cm-volume
         configMap:
           name: sonar-qube-excel-extractor-config

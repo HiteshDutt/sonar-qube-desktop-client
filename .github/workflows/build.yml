@@ -67,5 +67,5 @@ jobs:
               with:
                 namespace: '${{ secrets.AZ_K8_NAMESPACE }}'
                 manifests: |
-                    k8/api
+                    k8/deployment
                 images: 'hiteshdutt/sonar-server-excel-extractor'

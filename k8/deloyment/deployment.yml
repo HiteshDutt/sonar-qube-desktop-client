@@ -40,4 +40,4 @@ spec:
       volumes:
       - name: Sonar-qube-excel-extractor-cm-volume
         configMap:
-          name: Sonar-qube-excel-extractor-config
+          name: sonar-qube-excel-extractor-config

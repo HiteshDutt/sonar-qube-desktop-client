@@ -26,7 +26,7 @@ export class ExportSonarIssuesExcel {
         const profiles = profilesByLang.profiles;
         let rules = await this.getRulesByQualityProfile([...profiles].map((profile: any) => profile.key));
         this.setCountFromSheetFormulaForData(rules);
-        ExcelUtility.generate(rules, 'Rules', workbookPath);
+        ExcelUtility.generate(rules, 'Rules', workbookPath, true, 'sheetIdentifier');
         for (let i = 0; i < rules.length; i++) {
             console.log(`Getting Issue for rule ${rules[i].sheetIdentifier} - Rule Count ${i + 1} / ${rules.length}`);
             const issues = await this.getAllIssuesByRule(rules[i].key);

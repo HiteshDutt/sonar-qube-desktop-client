@@ -5,7 +5,7 @@ import fs from 'fs';
 
 export class ExcelUtility {
 
-    public static generate(data: any[], sheetName: string, filePath: string) {
+    public static generate(data: any[], sheetName: string, filePath: string, linksNeeded:boolean = false, columnIdentifier: string = "sheetIdentifier") {
         const workbook: WorkBook = this.createOrOpneExistingWOrkbook(filePath);
         let worksheet: WorkSheet;
         
@@ -24,6 +24,10 @@ export class ExcelUtility {
                     worksheet = this.applyColorToCell(worksheet, i, j, "FFFFFF");
                 }
             }
+        }
+
+        if(linksNeeded){
+            worksheet = this.generateOtherSheetLinksBasedOnSheetInput(worksheet, columnIdentifier);
         }
 
         // Add the worksheet to the workbook
@@ -94,6 +98,21 @@ export class ExcelUtility {
         XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
         // Write the workbook to a file
         XLSXStyle.writeFile(workbook, filePath);
+    }
+
+    public static generateOtherSheetLinksBasedOnSheetInput(mainSheet: WorkSheet, columnIdentifier: string){
+        const data = XLSX.utils.sheet_to_json(mainSheet);
+
+        data.forEach((item: any) => {
+            const sheetName = item[columnIdentifier];
+                const cellAddress = XLSX.utils.encode_cell({ r: item.__rowNum__, c: 0 });
+                mainSheet[cellAddress].l = { 
+                    Target: `#'${sheetName}'!A1`,
+                    Tooltip: `Go to ${sheetName}`
+                 };
+        });
+
+        return mainSheet;
     }
 
     private static createOrOpneExistingWOrkbook(filePath: string): WorkBook {

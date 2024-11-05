@@ -31,3 +31,7 @@ export interface ISonarIssue {
     issueStatus: string;
     prioritizedRule: boolean;
   }
+export interface ISonarIssuesWithSheet{
+  issues: ISonarIssue[];
+  sheetIdentifier: string;
+}

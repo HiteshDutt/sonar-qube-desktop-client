@@ -9,12 +9,15 @@ export class SonarWriteUpdateInfo{
     constructor(private readonly api: Api) {
     }
 
-    updateBulkIssuesToSonar = async (keysCsv: string, transition: string) => {
+    updateBulkIssuesToSonar = async (keysCsv: string, transition: string, assignee: string = 'undefined') => {
         let url = `${appsettings.sonarBaseUrl}api/issues/bulk_change`;
         const formData = new FormData();
         formData.append('issues', keysCsv);
         formData.append('do_transition', transition);
-        const response = await this.api.post<ISonarBulkIssuesResponse>(url, formData ,Utility.setSonarHeader(appsettings.sonarToken));
+        if (assignee!= 'undefined') {
+        formData.append('assign', assignee);
+        }
+        const response = await this.api.post<ISonarBulkIssuesResponse>(url, formData, Utility.setSonarHeader(appsettings.sonarToken));
         return response;
     }
 }

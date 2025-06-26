@@ -20,6 +20,9 @@ export class ExportSonarIssuesExcel {
             fs.mkdirSync(appsettings.outputDirectory);
         }
 
+        const users = await this.sonarReadInfo.getAllUsers();
+        const userMap = Object.fromEntries(users.map(user => [user.login, user.name]));
+
         const workbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.branch)}`;
         const sheetDetails = this.getIntoSheetDetails();
         ExcelUtility.generate(sheetDetails, 'Information', workbookPath);
@@ -32,10 +35,10 @@ export class ExportSonarIssuesExcel {
         this.setCountFromSheetFormulaForData(rules);
         ExcelUtility.generate(rules, 'Rules', workbookPath, true, 'sheetIdentifier');
         if(appsettings.requireParallelRuleRead){
-            await this.performParallelReadForRules(rules, workbookPath);
+            await this.performParallelReadForRules(rules, workbookPath, userMap);
         }
         else{
-            await this.performSequentialReadForRules(rules, workbookPath);
+            await this.performSequentialReadForRules(rules, workbookPath, userMap);
         }
         
         console.timeEnd('ExportSonarIssuesExcel');
@@ -131,7 +134,7 @@ export class ExportSonarIssuesExcel {
         return `${lang}-${name}`
     }
 
-    private async performParallelReadForRules(rules: any[], workbookPath: string){
+    private async performParallelReadForRules(rules: any[], workbookPath: string, userMap: Record<string, string>){
         let promises: Promise<ISonarIssuesWithSheet>[] = [];
         for (const {index, rule}  of rules.map((rule, index) => ({rule, index}))) {
             console.log(`Getting Issue for rule ${rule.sheetIdentifier} - Rule Count ${index + 1} / ${rules.length}`);
@@ -142,7 +145,20 @@ export class ExportSonarIssuesExcel {
 
                 for (let issues of promiseResolve){
                     if (issues.issues.length > 0) {
-                        const mappedIssues = issues.issues.flat().map((issue: any) => { return { key: issue.key, severity: issue.severity, message: issue.message, line: issue.line, component: issue.component } });
+                        //const mappedIssues = issues.issues.flat().map((issue: any) => { return { key: issue.key, severity: issue.severity, message: issue.message, line: issue.line, component: issue.component } });
+                        const mappedIssues = issues.issues.flat().map((issue: any) => { 
+                                            return { 
+                                                key: issue.key, 
+                                                severity: issue.severity, 
+                                                message: issue.message, 
+                                                line: issue.line, 
+                                                component: issue.component,
+                                                assigneeUserName: (userMap[issue.assignee] || issue.assignee) ?? '',
+                                                assignee: issue.assignee ?? '',
+                                                status: issue.status
+                                            }; 
+                                        });
+
                         ExcelUtility.generate(mappedIssues, issues.sheetIdentifier, workbookPath);
                     }
                 }
@@ -152,12 +168,25 @@ export class ExportSonarIssuesExcel {
         }
     }
 
-    private async performSequentialReadForRules(rules: any[], workbookPath: string){
+    private async performSequentialReadForRules(rules: any[], workbookPath: string, userMap: Record<string, string>){
         for (let i = 0; i < rules.length; i++) {
             console.log(`Getting Issue for rule ${rules[i].sheetIdentifier} - Rule Count ${i + 1} / ${rules.length}`);
             const issues = await this.getAllIssuesByRule(rules[i].key, rules[i].sheetIdentifier);
             if (issues.issues.length > 0) {
-                const mappedIssues = issues.issues.flat().map((issue: any) => { return { key: issue.key, severity: issue.severity, message: issue.message, line: issue.line, component: issue.component } });
+                //const mappedIssues = issues.issues.flat().map((issue: any) => { return { key: issue.key, severity: issue.severity, message: issue.message, line: issue.line, component: issue.component } });
+                const mappedIssues = issues.issues.flat().map((issue: any) => { 
+                                    return { 
+                                        key: issue.key, 
+                                        severity: issue.severity, 
+                                        message: issue.message, 
+                                        line: issue.line, 
+                                        component: issue.component,
+                                        assigneeUserName: (userMap[issue.assignee] || issue.assignee) ?? '',
+                                        assignee: issue.assignee ?? '',
+                                        status: issue.status
+                                    }; 
+                                });
+
                 ExcelUtility.generate(mappedIssues, rules[i].sheetIdentifier, workbookPath);
             }
         }

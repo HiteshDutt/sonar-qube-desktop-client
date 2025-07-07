@@ -11,6 +11,34 @@ export class SonarReadInfo {
     constructor(private readonly api: Api) {
     }
 
+    async getAllUsers(): Promise<any[]> {
+    const allUsers: any[] = [];
+    let page = 1;
+    const pageSize = 100;
+    let totalFetched = 0;
+    let totalUsers;
+
+    while (totalFetched < totalUsers) {
+        const url = `${appsettings.sonarBaseUrl}/api/users/search`;
+        const response = await this.api.get<any>(
+            url,
+            { p: page, ps: pageSize },
+            Utility.setSonarHeader(appsettings.sonarToken)
+        );
+
+        const users = response.users || [];
+        totalUsers = response.paging?.total || users.length;
+
+        allUsers.push(...users);
+        totalFetched += users.length;
+        page++;
+    }
+
+    return allUsers;
+}
+
+    
+    
     async getProfilesByLangugae(language: string) : Promise<ISonarProfileRead> {
         let url = `${appsettings.sonarBaseUrl}/api/qualityprofiles/search`;
         const response =  await this.api.get<ISonarProfileRead>(url, { 'project': appsettings.sonarProjectKey , 'language': language } ,Utility.setSonarHeader(appsettings.sonarToken));

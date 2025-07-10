@@ -15,8 +15,8 @@ export class Utility {
         return [chunk, ...remainingChunks];
     }
 
-    public static getExcelFileNameFromBranch(branch: string): string {
-        const branchName = `${branch.split('/').pop()}.xlsx`;
+    public static getExcelFileNameFromBranch(projectName: string, branch: string): string {
+        const branchName = `${projectName}_${branch.split('/').pop()}.xlsx`;
         return branchName;
     }
 

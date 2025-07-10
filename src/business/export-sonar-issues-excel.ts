@@ -23,7 +23,7 @@ export class ExportSonarIssuesExcel {
         const users = await this.sonarReadInfo.getAllUsers();
         const userMap = Object.fromEntries(users.map(user => [user.login, user.name]));
 
-        const workbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.branch)}`;
+        const workbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey,appsettings.branch)}`;
         const sheetDetails = this.getIntoSheetDetails();
         ExcelUtility.generate(sheetDetails, 'Information', workbookPath);
         let rules: any[] = [];

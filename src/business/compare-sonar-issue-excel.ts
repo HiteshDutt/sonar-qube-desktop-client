@@ -17,9 +17,9 @@ export class CompareSonarIssuesExcel {
             exit(1);
         }
 
-        const finalWorkbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.compareBranch[0])}_${Utility.getExcelFileNameFromBranch(appsettings.compareBranch[1])}`;
-        const workbook1Path = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.compareBranch[0])}`;
-        const workbook2Path = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.compareBranch[1])}`;
+        const finalWorkbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey, appsettings.compareBranch[0])}_${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey, appsettings.compareBranch[1])}`;
+        const workbook1Path = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey, appsettings.compareBranch[0])}`;
+        const workbook2Path = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey, appsettings.compareBranch[1])}`;
 
         const informationData = [
             {info: `This script will compare the issues from the two branches and generate an excel file with the differences.`, color: this.pinkColour},

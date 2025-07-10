@@ -14,7 +14,7 @@ export class UpdateSonarIssuesExcel {
 
     async upload(): Promise<void> {
         console.time('UpdateSonarIssuesExcel');
-        const workbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.branch)}`;
+        const workbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey,appsettings.branch)}`;
         const rulesSheet = ExcelUtility.read(workbookPath, 'Rules') as any[];
         for (let i = 0; i < rulesSheet.length; i++) {
         const rule = rulesSheet[i];

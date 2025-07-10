@@ -8,7 +8,7 @@ export const appsettings = {
     compareBranch: [],
     pageSize: 500,
     maxRecordsToBeUpdaate: 500,
-    outputDirectory: '/output',
+    outputDirectory: './output',
     parallelReadCalls: 100,
     requireParallelRuleRead: false
 }

@@ -42,6 +42,7 @@ export class SonarReadInfo {
     async getProfilesByLangugae(language: string) : Promise<ISonarProfileRead> {
         let url = `${appsettings.sonarBaseUrl}/api/qualityprofiles/search`;
         const response =  await this.api.get<ISonarProfileRead>(url, { 'project': appsettings.sonarProjectKey , 'language': language } ,Utility.setSonarHeader(appsettings.sonarToken));
+        console.log(`Fetched ${JSON.stringify(response)} profiles for language ${language}`);
         return response;
     }
 

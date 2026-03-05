@@ -11,6 +11,7 @@ export class ExportSonarIssuesExcel {
     constructor(
         private readonly sonarReadInfo: SonarReadInfo
     ) {
+        console.log('Initialized ExportSonarIssuesExcel with settings:', appsettings);
     }
 
     async export() {
@@ -29,7 +30,9 @@ export class ExportSonarIssuesExcel {
         let rules: any[] = [];
         for (let lang of appsettings.langugage) {
             let profilesByLang = await this.sonarReadInfo.getProfilesByLangugae(lang);
+            console.log(`Language ${lang} has ${profilesByLang?.profiles?.length} profiles`);
             const profiles = profilesByLang.profiles;
+            console.log(`Getting rules for language ${lang} with profiles ${[...profiles].map((profile: any) => profile.name).join(',')}`);
             rules.push(... await this.getRulesByQualityProfile([...profiles].map((profile: any) => profile.key), lang));
         }
         this.setCountFromSheetFormulaForData(rules);

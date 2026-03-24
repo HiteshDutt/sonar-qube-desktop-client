@@ -8,6 +8,10 @@
     "dev:read": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.read.ts\"",
     "dev:update": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.write.ts\"",
     "dev:compare": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.compare.ts\"",
+    "dev:servicebus": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.servicebus.ts\"",
+    "dev:filewatcher": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node ./src/index.filewatcher.ts\"",
+    "start:servicebus": "ts-node ./src/index.servicebus.ts",
+    "start:filewatcher": "ts-node ./src/index.filewatcher.ts",
     "build": "tsc --project tsconfig.json"
   },
   "jest": {
@@ -17,7 +21,9 @@
   "author": "Hitesh Dutt",
   "license": "ISC",
   "dependencies": {
+    "@azure/service-bus": "^7.9.5",
     "axios": "^1.7.7",
+    "chokidar": "^4.0.3",
     "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0",
     "typescript": "^5.6.2",
@@ -25,6 +31,7 @@
     "xlsx-style": "^0.8.13"
   },
   "devDependencies": {
+    "@types/chokidar": "^1.7.5",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.4",
     "jest": "^29.7.0",

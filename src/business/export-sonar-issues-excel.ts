@@ -11,7 +11,6 @@ export class ExportSonarIssuesExcel {
     constructor(
         private readonly sonarReadInfo: SonarReadInfo
     ) {
-        console.log('Initialized ExportSonarIssuesExcel with settings:', appsettings);
     }
 
     async export() {
@@ -21,18 +20,24 @@ export class ExportSonarIssuesExcel {
             fs.mkdirSync(appsettings.outputDirectory);
         }
 
+        if (!fs.existsSync(appsettings.readDirectory)) {
+          fs.mkdirSync(appsettings.readDirectory);
+        }
+
+        if (!fs.existsSync(appsettings.completeDirectory)) {
+          fs.mkdirSync(appsettings.completeDirectory);
+        }
+
         const users = await this.sonarReadInfo.getAllUsers();
         const userMap = Object.fromEntries(users.map(user => [user.login, user.name]));
 
-        const workbookPath = `${appsettings.outputDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey,appsettings.branch)}`;
+        const workbookPath = `${appsettings.readDirectory}/${Utility.getExcelFileNameFromBranch(appsettings.sonarProjectKey,appsettings.branch)}`;
         const sheetDetails = this.getIntoSheetDetails();
         ExcelUtility.generate(sheetDetails, 'Information', workbookPath);
         let rules: any[] = [];
         for (let lang of appsettings.langugage) {
             let profilesByLang = await this.sonarReadInfo.getProfilesByLangugae(lang);
-            console.log(`Language ${lang} has ${profilesByLang?.profiles?.length} profiles`);
             const profiles = profilesByLang.profiles;
-            console.log(`Getting rules for language ${lang} with profiles ${[...profiles].map((profile: any) => profile.name).join(',')}`);
             rules.push(... await this.getRulesByQualityProfile([...profiles].map((profile: any) => profile.key), lang));
         }
         this.setCountFromSheetFormulaForData(rules);

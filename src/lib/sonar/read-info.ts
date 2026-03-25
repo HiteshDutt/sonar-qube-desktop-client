@@ -16,7 +16,7 @@ export class SonarReadInfo {
     let page = 1;
     const pageSize = 100;
     let totalFetched = 0;
-    let totalUsers;
+    let totalUsers = 1; // Initialize to a value greater than 0 to enter the loop
 
     while (totalFetched < totalUsers) {
         const url = `${appsettings.sonarBaseUrl}/api/users/search`;
@@ -42,7 +42,6 @@ export class SonarReadInfo {
     async getProfilesByLangugae(language: string) : Promise<ISonarProfileRead> {
         let url = `${appsettings.sonarBaseUrl}/api/qualityprofiles/search`;
         const response =  await this.api.get<ISonarProfileRead>(url, { 'project': appsettings.sonarProjectKey , 'language': language } ,Utility.setSonarHeader(appsettings.sonarToken));
-        console.log(`Fetched ${JSON.stringify(response)} profiles for language ${language}`);
         return response;
     }
 

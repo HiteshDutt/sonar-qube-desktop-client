@@ -31,11 +31,11 @@ A Node.js/TypeScript utility to export SonarQube issues into Excel, bulk-update 
 
 ## Overview
 
-| Mode | Entry Point | What it does |
-|------|-------------|--------------|
-| **Read** | `src/index.read.ts` | Connects to SonarQube, pulls all issues by rule/quality-profile for the configured branch and languages, and writes them into a structured Excel workbook. |
-| **Update** | `src/index.write.ts` | Reads a previously generated Excel workbook, finds rules where an action has been set, and performs a bulk status transition on the matching issues in SonarQube. |
-| **Compare** | `src/index.compare.ts` | Reads two Excel exports (from two different branches) and produces a diff workbook colour-coded by status: resolved, introduced, or persisting. |
+| Mode        | Entry Point            | What it does                                                                                                                                                      |
+| ----------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Read**    | `src/index.read.ts`    | Connects to SonarQube, pulls all issues by rule/quality-profile for the configured branch and languages, and writes them into a structured Excel workbook.        |
+| **Update**  | `src/index.write.ts`   | Reads a previously generated Excel workbook, finds rules where an action has been set, and performs a bulk status transition on the matching issues in SonarQube. |
+| **Compare** | `src/index.compare.ts` | Reads two Excel exports (from two different branches) and produces a diff workbook colour-coded by status: resolved, introduced, or persisting.                   |
 
 ---
 
@@ -92,55 +92,56 @@ npm install
 
 Located at [`src/config/appsettings.ts`](src/config/appsettings.ts). All values can be overridden by environment variables or (for Read mode) CLI arguments — see sections below.
 
-| Setting | Description |
-|---------|-------------|
-| `sonarBaseUrl` | Base URL of your SonarQube server (e.g. `http://localhost:9000`) |
-| `sonarToken` | User token from SonarQube ([how to generate](https://docs.sonarsource.com/sonarqube/9.8/user-guide/user-account/generating-and-using-tokens/)) |
-| `sonarProjectKey` | Project key as shown in SonarQube |
-| `branch` | Branch to export issues from (must already have been analysed in SonarQube) |
-| `compareBranch` | Array of two branch names used in Compare mode |
-| `langugage` | Array of language codes to scan (e.g. `['cs', 'ts']`) |
-| `issueStatues` | Issue status filter — e.g. `OPEN` |
-| `pageSize` | Records per API request (max `500`) |
-| `maxRecordsToBeUpdaate` | Max issues to update in a single Update run |
-| `outputDirectory` | Directory where Excel files are written/read |
-| `parallelReadCalls` | Number of concurrent API calls in parallel read mode |
-| `requireParallelRuleRead` | `true` to fetch rule issues in parallel batches |
+| Setting                   | Description                                                                                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sonarBaseUrl`            | Base URL of your SonarQube server (e.g. `http://localhost:9000`)                                                                               |
+| `sonarToken`              | User token from SonarQube ([how to generate](https://docs.sonarsource.com/sonarqube/9.8/user-guide/user-account/generating-and-using-tokens/)) |
+| `sonarProjectKey`         | Project key as shown in SonarQube                                                                                                              |
+| `branch`                  | Branch to export issues from (must already have been analysed in SonarQube)                                                                    |
+| `compareBranch`           | Array of two branch names used in Compare mode                                                                                                 |
+| `langugage`               | Array of language codes to scan (e.g. `['cs', 'ts']`)                                                                                          |
+| `issueStatues`            | Issue status filter — e.g. `OPEN`                                                                                                              |
+| `pageSize`                | Records per API request (max `500`)                                                                                                            |
+| `maxRecordsToBeUpdaate`   | Max issues to update in a single Update run                                                                                                    |
+| `outputDirectory`         | Directory where Excel files are written/read                                                                                                   |
+| `parallelReadCalls`       | Number of concurrent API calls in parallel read mode                                                                                           |
+| `requireParallelRuleRead` | `true` to fetch rule issues in parallel batches                                                                                                |
 
 ### Environment Variables
 
 All sensitive or deployment-specific values can be set via environment variables, which take precedence over the hardcoded defaults in `appsettings.ts`.
 
-| Environment Variable | Maps to |
-|----------------------|---------|
-| `SONAR_BASE_URL` | `sonarBaseUrl` |
-| `SONAR_TOKEN` | `sonarToken` |
-| `SONAR_PROJECT_KEY` | `sonarProjectKey` |
-| `SONAR_BRANCH` | `branch` |
-| `SONAR_LANGUAGES` | `langugage` (comma-separated, e.g. `cs,ts`) |
-| `SONAR_ISSUE_STATUSES` | `issueStatues` |
-| `OUTPUT_DIRECTORY` | `outputDirectory` |
-| `PAGE_SIZE` | `pageSize` |
-| `MAX_RECORDS_TO_BE_UPDATED` | `maxRecordsToBeUpdaate` |
+| Environment Variable        | Maps to                                     |
+| --------------------------- | ------------------------------------------- |
+| `SONAR_BASE_URL`            | `sonarBaseUrl`                              |
+| `SONAR_TOKEN`               | `sonarToken`                                |
+| `SONAR_PROJECT_KEY`         | `sonarProjectKey`                           |
+| `SONAR_BRANCH`              | `branch`                                    |
+| `SONAR_LANGUAGES`           | `langugage` (comma-separated, e.g. `cs,ts`) |
+| `SONAR_ISSUE_STATUSES`      | `issueStatues`                              |
+| `OUTPUT_DIRECTORY`          | `outputDirectory`                           |
+| `PAGE_SIZE`                 | `pageSize`                                  |
+| `MAX_RECORDS_TO_BE_UPDATED` | `maxRecordsToBeUpdaate`                     |
 
 ### CLI Arguments (Read mode)
 
 When running Read mode directly, you can override any setting via CLI arguments. **CLI arguments take the highest precedence** (CLI > env var > appsettings default).
 
-| Argument | Description |
-|----------|-------------|
-| `--sonarBaseUrl=<url>` | SonarQube base URL |
-| `--sonarToken=<token>` | SonarQube user token |
-| `--sonarProjectKey=<key>` | SonarQube project key |
-| `--branch=<branch>` | Branch name |
-| `--languages=<cs,ts>` | Comma-separated language codes |
-| `--issueStatuses=<OPEN>` | Issue status filter |
-| `--outputDirectory=<path>` | Output directory |
-| `--pageSize=<number>` | Page size |
-| `--parallelReadCalls=<number>` | Parallel call count |
-| `--requireParallelRuleRead` | Flag — enables parallel rule reading |
+| Argument                       | Description                          |
+| ------------------------------ | ------------------------------------ |
+| `--sonarBaseUrl=<url>`         | SonarQube base URL                   |
+| `--sonarToken=<token>`         | SonarQube user token                 |
+| `--sonarProjectKey=<key>`      | SonarQube project key                |
+| `--branch=<branch>`            | Branch name                          |
+| `--languages=<cs,ts>`          | Comma-separated language codes       |
+| `--issueStatuses=<OPEN>`       | Issue status filter                  |
+| `--outputDirectory=<path>`     | Output directory                     |
+| `--pageSize=<number>`          | Page size                            |
+| `--parallelReadCalls=<number>` | Parallel call count                  |
+| `--requireParallelRuleRead`    | Flag — enables parallel rule reading |
 
 **Example:**
+
 ```bash
 npx ts-node ./src/index.read.ts \
   --branch=develop \
@@ -163,11 +164,13 @@ npm run dev:read
 ```
 
 Or with CLI overrides:
+
 ```bash
 npx ts-node ./src/index.read.ts --branch=develop --languages=cs,ts
 ```
 
 The output workbook will have:
+
 - An **Information** sheet describing the report
 - A **Rules** sheet listing all rules with issue counts
 - One **sheet per rule** containing the individual issues
@@ -188,13 +191,14 @@ npm run dev:update
 
 Generates a colour-coded comparison workbook between two branch exports.
 
-| Colour | Meaning |
-|--------|---------|
-| 🟢 Green | Issue resolved since first branch |
-| 🔴 Red | Issue introduced in second branch |
-| 🔵 Blue | Issue persists across both branches |
+| Colour   | Meaning                             |
+| -------- | ----------------------------------- |
+| 🟢 Green | Issue resolved since first branch   |
+| 🔴 Red   | Issue introduced in second branch   |
+| 🔵 Blue  | Issue persists across both branches |
 
 **Prerequisites:**
+
 1. Run **Read** mode for both branches (results must exist in the output directory)
 2. Set `compareBranch` in `appsettings.ts` to `['branch-one', 'branch-two']`
 
@@ -227,11 +231,13 @@ A Docker image is available on [Docker Hub](https://hub.docker.com/r/hiteshdutt/
 The image defaults to running **Read** mode (`dist/index.read.js`).
 
 **Build locally:**
+
 ```bash
 docker build -t sonar-desktop-client .
 ```
 
 **Run:**
+
 ```bash
 docker run \
   -e SONAR_BASE_URL=http://your-sonar:9000 \
@@ -250,6 +256,7 @@ docker run \
 The workflow [`.github/workflows/sonar-read.yml`](.github/workflows/sonar-read.yml) automates the Read mode on a schedule or on demand, and uploads the generated Excel output to **Azure Blob Storage** using **OIDC Federated Credentials** (no long-lived secrets).
 
 **Triggers:**
+
 - **Manual** (`workflow_dispatch`) — with runtime inputs
 - **Scheduled** — daily at midnight UTC using input defaults
 
@@ -257,30 +264,30 @@ The workflow [`.github/workflows/sonar-read.yml`](.github/workflows/sonar-read.y
 
 Provided at run time when triggering manually via the GitHub UI:
 
-| Input | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `branch` | Yes | `main` | SonarQube branch to read |
-| `languages` | Yes | `cs` | Comma-separated language codes |
-| `issueStatuses` | No | `OPEN` | Issue status filter |
-| `outputDirectory` | No | `./output` | Local output path |
-| `pageSize` | No | `500` | API page size |
-| `parallelReadCalls` | No | `100` | Parallel API calls |
-| `requireParallelRuleRead` | No | `false` | Enable parallel rule reading |
+| Input                     | Required | Default    | Description                    |
+| ------------------------- | -------- | ---------- | ------------------------------ |
+| `branch`                  | Yes      | `main`     | SonarQube branch to read       |
+| `languages`               | Yes      | `cs`       | Comma-separated language codes |
+| `issueStatuses`           | No       | `OPEN`     | Issue status filter            |
+| `outputDirectory`         | No       | `./output` | Local output path              |
+| `pageSize`                | No       | `500`      | API page size                  |
+| `parallelReadCalls`       | No       | `100`      | Parallel API calls             |
+| `requireParallelRuleRead` | No       | `false`    | Enable parallel rule reading   |
 
 ### Required Secrets
 
 Configure these in **Settings → Secrets and variables → Actions** of your repository:
 
-| Secret | Description |
-|--------|-------------|
-| `SONAR_BASE_URL` | SonarQube server base URL |
-| `SONAR_TOKEN` | SonarQube user token |
-| `SONAR_PROJECT_KEY` | SonarQube project key |
-| `AZURE_CLIENT_ID` | App Registration client ID |
-| `AZURE_TENANT_ID` | Azure AD tenant ID |
-| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
-| `AZ_STORAGE_ACCOUNT_NAME` | Azure Storage account name |
-| `AZ_STORAGE_CONTAINER_NAME` | Blob container name |
+| Secret                      | Description                |
+| --------------------------- | -------------------------- |
+| `SONAR_BASE_URL`            | SonarQube server base URL  |
+| `SONAR_TOKEN`               | SonarQube user token       |
+| `SONAR_PROJECT_KEY`         | SonarQube project key      |
+| `AZURE_CLIENT_ID`           | App Registration client ID |
+| `AZURE_TENANT_ID`           | Azure AD tenant ID         |
+| `AZURE_SUBSCRIPTION_ID`     | Azure subscription ID      |
+| `AZ_STORAGE_ACCOUNT_NAME`   | Azure Storage account name |
+| `AZ_STORAGE_CONTAINER_NAME` | Blob container name        |
 
 ### Azure Federated Identity Setup
 
@@ -301,13 +308,12 @@ To use OIDC (no client secret required):
 
 Set these in the `action` column of the **Rules** sheet before running Update mode:
 
-| Value in Excel | SonarQube Transition |
-|----------------|----------------------|
-| `accept` | Accept as known issue |
-| `falsepositive` / `false-positive` | Mark as false positive |
-| `reopen` / `open` | Re-open the issue |
-| `resolve` / `resolved` | Resolve the issue |
-| `confirm` / `confirmed` | Confirm the issue |
-| `wontfix` / `wont-fix` | Won't fix |
-| `noaction` | *(skip — no change made)* |
-
+| Value in Excel                     | SonarQube Transition      |
+| ---------------------------------- | ------------------------- |
+| `accept`                           | Accept as known issue     |
+| `falsepositive` / `false-positive` | Mark as false positive    |
+| `reopen` / `open`                  | Re-open the issue         |
+| `resolve` / `resolved`             | Resolve the issue         |
+| `confirm` / `confirmed`            | Confirm the issue         |
+| `wontfix` / `wont-fix`             | Won't fix                 |
+| `noaction`                         | _(skip — no change made)_ |

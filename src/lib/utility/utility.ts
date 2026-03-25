@@ -21,6 +21,9 @@ export class Utility {
     }
 
     public static readonly setSonarHeader = (token: string) => {
-        return {'Authorization' : `Bearer ${token}`};
+        // SonarQube uses Basic Auth for tokens
+        // Token is used as username with empty password (token:)
+        const encodedToken = Buffer.from(`${token}:`).toString('base64');
+        return {'Authorization' : `Basic ${encodedToken}`};
     }
 }

@@ -41,13 +41,16 @@ export class ExportSonarIssuesExcel {
             rules.push(... await this.getRulesByQualityProfile([...profiles].map((profile: any) => profile.key), lang));
         }
         this.setCountFromSheetFormulaForData(rules);
-        ExcelUtility.generate(rules, 'Rules', workbookPath, true, 'sheetIdentifier');
         if(appsettings.requireParallelRuleRead){
             await this.performParallelReadForRules(rules, workbookPath, userMap);
         }
         else{
             await this.performSequentialReadForRules(rules, workbookPath, userMap);
         }
+        // Write Rules sheet after issues are fetched so count column shows actual values
+        ExcelUtility.generate(rules, 'Rules', workbookPath, true, 'sheetIdentifier');
+        // Move Rules back to 2nd position (after Information) since issue sheets were written first
+        ExcelUtility.reorderSheet(workbookPath, 'Rules', 1);
         
         console.timeEnd('ExportSonarIssuesExcel');
     }
@@ -124,8 +127,7 @@ export class ExportSonarIssuesExcel {
 
     private setCountFromSheetFormulaForData(data: any[]) {
         for (let i = 0; i < data.length; i++) {
-            const formula = `=COUNTA(INDIRECT("'"&B${i + 2}&"'!A:A")) - 1`
-            data[i].count = formula
+            data[i].count = 0;
         }
     }
 
@@ -152,6 +154,8 @@ export class ExportSonarIssuesExcel {
                 const promiseResolve = await Promise.all(promises)
 
                 for (let issues of promiseResolve){
+                    const matchingRule = rules.find((r: any) => r.sheetIdentifier === issues.sheetIdentifier);
+                    if (matchingRule) matchingRule.count = issues.issues.length;
                     if (issues.issues.length > 0) {
                         //const mappedIssues = issues.issues.flat().map((issue: any) => { return { key: issue.key, severity: issue.severity, message: issue.message, line: issue.line, component: issue.component } });
                         const mappedIssues = issues.issues.flat().map((issue: any) => { 
@@ -180,6 +184,7 @@ export class ExportSonarIssuesExcel {
         for (let i = 0; i < rules.length; i++) {
             console.log(`Getting Issue for rule ${rules[i].sheetIdentifier} - Rule Count ${i + 1} / ${rules.length}`);
             const issues = await this.getAllIssuesByRule(rules[i].key, rules[i].sheetIdentifier);
+            rules[i].count = issues.issues.length;
             if (issues.issues.length > 0) {
                 //const mappedIssues = issues.issues.flat().map((issue: any) => { return { key: issue.key, severity: issue.severity, message: issue.message, line: issue.line, component: issue.component } });
                 const mappedIssues = issues.issues.flat().map((issue: any) => { 

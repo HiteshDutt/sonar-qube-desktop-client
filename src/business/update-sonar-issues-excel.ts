@@ -24,11 +24,16 @@ export class UpdateSonarIssuesExcel {
             const validTransitions = new Set([
             'confirm', 'unconfirm', 'reopen', 'resolve',
             'falsepositive', 'wontfix', 'resolveasreviewed',
-            'resetastoreview', 'accept'
+            'resetastoreview'
+            // 'accept' is only valid on SonarQube 10.4+; use 'wont-fix' instead
         ]);
         switch (rule.action.toLowerCase()) {
                 case 'open':
-                    rule.action = 'reopen';
+                    rule.action = 'reopen'; // valid only from RESOLVED state
+                    break;
+                case 'open-from-confirmed':
+                case 'unconfirm':
+                    rule.action = 'unconfirm'; // valid only from CONFIRMED state
                     break;
                 case 'resolved':
                     rule.action = 'resolve';
@@ -40,6 +45,7 @@ export class UpdateSonarIssuesExcel {
                     rule.action = 'falsepositive';
                     break;
                 case 'wont-fix':
+                case 'accept': // 'accept' Excel alias maps to 'wontfix' (SonarQube <= 10.3); 'accept' transition only exists in SonarQube 10.4+
                     rule.action = 'wontfix';
                     break;
             }
@@ -54,6 +60,8 @@ export class UpdateSonarIssuesExcel {
         for(let element of issuesKeysCsv){
                 const response = await this.sonarWriteUpdateInfo.updateBulkIssuesToSonar(element, rule.action);
                 console.log(`Response From Sonar : ${JSON.stringify(response)}`);
+                if (response.ignored > 0) console.warn(`${response.ignored} issue(s) were IGNORED by SonarQube for transition '${rule.action}'. Possible causes: (1) issue is not in a state that allows this transition, (2) token user lacks 'Administer Issues' permission (required for wontfix/falsepositive).`);
+                if (response.failures > 0) console.warn(`${response.failures} issue(s) FAILED to update.`);
             }
         }
         else {
@@ -69,7 +77,8 @@ export class UpdateSonarIssuesExcel {
         const validTransitions = new Set([
             'confirm', 'unconfirm', 'reopen', 'resolve',
             'falsepositive', 'wontfix', 'resolveasreviewed',
-            'resetastoreview', 'accept'
+            'resetastoreview'
+            // 'accept' is only valid on SonarQube 10.4+; use 'wont-fix' instead
         ]);
 
         // Group issue(status and assignee)
@@ -79,7 +88,11 @@ export class UpdateSonarIssuesExcel {
 
             switch (action) {
                 case 'open':
-                    action = 'reopen';
+                    action = 'reopen'; // valid only from RESOLVED state
+                    break;
+                case 'open-from-confirmed':
+                case 'unconfirm':
+                    action = 'unconfirm'; // valid only from CONFIRMED state
                     break;
                 case 'resolved':
                     action = 'resolve';
@@ -91,6 +104,7 @@ export class UpdateSonarIssuesExcel {
                     action = 'falsepositive';
                     break;
                 case 'wont-fix':
+                case 'accept': // 'accept' Excel alias maps to 'wontfix' (SonarQube <= 10.3); 'accept' transition only exists in SonarQube 10.4+
                     action = 'wontfix';
                     break;
             }
@@ -115,6 +129,8 @@ export class UpdateSonarIssuesExcel {
                 try {
                     const response = await this.sonarWriteUpdateInfo.updateBulkIssuesToSonar(chunk, action, assignee);
                     console.log(`Response From Sonar : ${JSON.stringify(response)}`);
+                    if (response.ignored > 0) console.warn(`${response.ignored} issue(s) were IGNORED by SonarQube for transition '${action}'. Possible causes: (1) issue is not in a state that allows this transition, (2) token user lacks 'Administer Issues' permission (required for wontfix/falsepositive).`);
+                    if (response.failures > 0) console.warn(`${response.failures} issue(s) FAILED to update.`);
                 } catch (ex: unknown) {
                         if (ex instanceof Error) {
                             console.error(`Failed to update issues for action '${action}' and assignee '${assignee}': ${ex.message}`);

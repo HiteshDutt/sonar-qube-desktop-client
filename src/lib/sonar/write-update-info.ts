@@ -10,7 +10,7 @@ export class SonarWriteUpdateInfo{
     }
 
     updateBulkIssuesToSonar = async (keysCsv: string, transition: string, assignee: string = 'undefined') => {
-        let url = `${appsettings.sonarBaseUrl}api/issues/bulk_change`;
+        let url = `${appsettings.sonarBaseUrl}/api/issues/bulk_change`;
         const formData = new FormData();
         formData.append('issues', keysCsv);
         formData.append('do_transition', transition);

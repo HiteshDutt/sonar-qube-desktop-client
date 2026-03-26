@@ -119,6 +119,15 @@ export class ExcelUtility {
         return fs.existsSync(filePath) ? this.readExistingFile(filePath) : XLSX.utils.book_new();
     }
 
+    public static reorderSheet(filePath: string, sheetName: string, targetIndex: number) {
+        const workbook = this.readExistingFile(filePath);
+        const currentIndex = workbook.SheetNames.indexOf(sheetName);
+        if (currentIndex === -1 || currentIndex === targetIndex) return;
+        workbook.SheetNames.splice(currentIndex, 1);
+        workbook.SheetNames.splice(targetIndex, 0, sheetName);
+        XLSXStyle.writeFile(workbook, filePath);
+    }
+
     private static readExistingFile(filePath: string): WorkBook {
         return XLSXStyle.readFile(filePath, { cellStyles: true });
     }
